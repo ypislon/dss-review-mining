@@ -1,4 +1,3 @@
-
 from peewee import *
 from playhouse.migrate import *
 import datetime
@@ -19,6 +18,7 @@ class BaseModel(Model):
         database = db_connection
 
 class Review(BaseModel):
+    url = CharField(null=true)
     text = CharField(null=true)
     date = DateTimeField()
     score_avg = IntegerField(null=true)
@@ -30,8 +30,10 @@ class Review(BaseModel):
     level_6_accomodation  = IntegerField(null=true)
     timestamp = DateTimeField(default=datetime.datetime.now)
     reference = IntegerField(null=true)
+    doctor_id = ForeignKeyField(Doctor) # TODO look up how this works
 
 class Doctor(BaseModel):
+    url = CharField(null=true)
     name = CharField()
     function = CharField()
     gender = CharField()
@@ -39,24 +41,27 @@ class Doctor(BaseModel):
     workplace = IntegerField()
 
 class Identifier(BaseModel):
-    review_disease = CharField()
-    review_relevance = CharField()
-    level_1_appointments = CharField()
-    level_2_treatment = CharField()
-    level_3_friendliness = CharField()
-    level_4_information = CharField()
-    level_5_listening = CharField()
-    level_6_accomodation = CharField()
-    review_score = CharField()
-    review_text = CharField()
-    doc_name = CharField()
-    doc_count_of_reviews = CharField()
-    doc_recommendation = CharField()
-    doc_gender = CharField()
-    doc_function = CharField()
-    doc_workplace = CharField()
+    name = CharField()
+    identifier = CharField()
+    # review_disease = CharField()
+    # review_relevance = CharField()
+    # level_1_appointments = CharField()
+    # level_2_treatment = CharField()
+    # level_3_friendliness = CharField()
+    # level_4_information = CharField()
+    # level_5_listening = CharField()
+    # level_6_accomodation = CharField()
+    # review_score = CharField()
+    # review_text = CharField()
+    # doc_name = CharField()
+    # doc_count_of_reviews = CharField()
+    # doc_recommendation = CharField()
+    # doc_gender = CharField()
+    # doc_function = CharField()
+    # doc_workplace = CharField()
+    # initial_review_link = CharField()
 
-list_of_models = [Review, Doctor]
+list_of_models = [Review, Doctor, Identifier]
 
 def create_tables(hard_reset = False):
     if(hard_reset):

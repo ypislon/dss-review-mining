@@ -41,7 +41,7 @@ class Review(BaseModel):
     #doctor_id = ForeignKeyField(Doctor) # TODO look up how this works
 
 class Doctor(BaseModel):
-    url = CharField(null=true)
+    url = CharField(null=True)
     name = CharField()
     function = CharField()
     gender = CharField()

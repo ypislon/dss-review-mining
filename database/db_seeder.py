@@ -25,7 +25,7 @@ identifiers = {
 }
 
 def seed_db():
-    for identifiers in identifier:
+    for identifier in identifiers:
         name = identifier[0]
         id = identifier[1]
 

@@ -1,5 +1,5 @@
 from peewee import *
-from db_schema import Website, Category
+from db_schema import *
 
 from db_connection import db_connection
 
@@ -45,6 +45,7 @@ categories = {
     ("Opposition24", "polikritik", "geldreform", "satire", "psychiatrie", "meldungen", "gesellschaft"),
     ("Unzensuriert", "51335", "51327", "51328", "51329", "51330", "51331", "51332", "51333", "51334") }
 
+# TODO
 def seed_db():
     for website in websites:
         name = website[0]

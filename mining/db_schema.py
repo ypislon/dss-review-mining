@@ -13,23 +13,31 @@ from db_connection import db_connection
 # define the models
 ## id as PK is always included as a default (thanks to peewee)
 
+# good ol' python black magic
+import sys
+import os
+scriptpath = "."
+
+# Add the directory containing your module to the Python path (wants absolute paths)
+sys.path.append(os.path.abspath(scriptpath))
+
 class BaseModel(Model):
 
     class Meta:
         database = db_connection
 
 class Review(BaseModel):
-    text = CharField(null=true)
+    text = CharField(null=True)
     date = DateTimeField()
-    score_avg = IntegerField(null=true)
-    level_1_appointments = IntegerField(null=true)
-    level_2_treatment = IntegerField(null=true)
-    level_3_friendliness = IntegerField(null=true)
-    level_4_information = IntegerField(null=true)
-    level_5_listening = IntegerField(null=true)
-    level_6_accomodation  = IntegerField(null=true)
+    score_avg = IntegerField(null=True)
+    level_1_appointments = IntegerField(null=True)
+    level_2_treatment = IntegerField(null=True)
+    level_3_friendliness = IntegerField(null=True)
+    level_4_information = IntegerField(null=True)
+    level_5_listening = IntegerField(null=True)
+    level_6_accomodation  = IntegerField(null=True)
     timestamp = DateTimeField(default=datetime.datetime.now)
-    reference = IntegerField(null=true)
+    reference = IntegerField(null=True)
 
 class Doctor(BaseModel):
     name = CharField()
@@ -69,4 +77,4 @@ def create_tables(hard_reset = False):
 
 def drop_tables():
     with db_connection:
-db_connection.drop_tables(list_of_models)
+        db_connection.drop_tables(list_of_models)

@@ -1,3 +1,4 @@
 database/db_connection.py
 .Rproj.user
-__pycache__/**
+mining/__pycache__/
+database/__pycache__/

@@ -51,6 +51,7 @@ class Doctor(BaseModel):
 class Identifier(BaseModel):
     name = CharField()
     identifier = CharField()
+    type = CharField()
     # review_disease = CharField()
     # review_relevance = CharField()
     ### -> can't assign single levels, since they differ for every review

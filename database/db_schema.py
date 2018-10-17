@@ -1,3 +1,11 @@
+# good ol' python black magic
+import sys
+import os
+scriptpath = "."
+
+# Add the directory containing your module to the Python path (wants absolute paths)
+sys.path.append(os.path.abspath(scriptpath))
+
 from peewee import *
 from playhouse.migrate import *
 import datetime
@@ -11,14 +19,6 @@ from db_connection import db_connection
 
 # define the models
 ## id as PK is always included as a default (thanks to peewee)
-
-# good ol' python black magic
-import sys
-import os
-scriptpath = "."
-
-# Add the directory containing your module to the Python path (wants absolute paths)
-sys.path.append(os.path.abspath(scriptpath))
 
 class BaseModel(Model):
 
@@ -42,11 +42,12 @@ class Review(BaseModel):
 
 class Doctor(BaseModel):
     url = CharField(null=True)
-    name = CharField()
-    function = CharField()
-    gender = CharField()
-    count_of_reviews = IntegerField()
-    workplace = IntegerField()
+    name = CharField(null=True)
+    function = CharField(null=True)
+    gender = CharField(null=True)
+    count_of_reviews = IntegerField(null=True)
+    workplace = IntegerField(null=True)
+    recommendation = CharField(null=True)
 
 class Identifier(BaseModel):
     name = CharField()

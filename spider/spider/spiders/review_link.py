@@ -1,11 +1,20 @@
 # -*- coding: utf-8 -*-
 import scrapy
+# good ol' python black magic
+import sys
+import os
+scriptpath = "."
 
+# Add the directory containing your module to the Python path (wants absolute paths)
+sys.path.append(os.path.abspath(scriptpath))
+
+from peewee import *
+from db_schema import Identifier, Doctor, Review
 
 class ReviewLinkSpider(scrapy.Spider):
-    name = 'review-link'
-    allowed_domains = ['zorgkaart.nl']
-    start_urls = ['http://zorgkaart.nl/']
+    name = 'reviewlinkspider'
+    allowed_domains = ['zorgkaartnederland.nl']
+    start_urls = ['http://zorgkaartnederland.nl']
 
     # URLS FOR MINING
     #
@@ -13,9 +22,21 @@ class ReviewLinkSpider(scrapy.Spider):
     # https://www.zorgkaartnederland.nl/zorgverlener/_NAME_OF_DOCTOR_/waardering
     # e.g. https://www.zorgkaartnederland.nl/zorgverlener/neuroloog-meulen-b-c-ter-278252/waardering
 
-    def parse(self, response):
-        pass
+    def start_requests(self):
+        doctors = Doctor.select()
 
-        # get all review urls
-        # scrape the review urls and get the needed information with the identifiers
-        # 
+        for doctor in doctors:
+            url = self.start_urls[0] + doctor.url + "waardering"
+            yield scrapy.Request(url=url, callback=self.parse, meta={'doctor_id':doctor.id})
+
+    def parse(self, response):
+
+        doctor = Doctor.get_by_id(response.meta["doctor_id"])
+
+        identifier = Identifier.get(Identifier.type == "3")
+
+        for review_link in response.xpath(identifier.identifier):
+            review = Review()
+            review.doctor = doctor
+            review.url = review_link.extract()
+            review.save()

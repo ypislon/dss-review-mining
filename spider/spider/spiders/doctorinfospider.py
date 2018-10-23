@@ -13,6 +13,13 @@ from urllib.parse import urljoin
 from db_schema import Identifier, Doctor
 #from helper import *
 
+# if you want to remove the logger functionality of peewee:
+# import logging
+# logger = logging.getLogger('peewee')
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.ERROR)
+
+
 # here we extract information about the doctors
 
 class DoctorinfospiderSpider(scrapy.Spider):
@@ -25,22 +32,18 @@ class DoctorinfospiderSpider(scrapy.Spider):
 
         for doctor in doctors:
             url = self.start_urls[0] + doctor.url
-            self.log("SCRAPING DOCTOR VIA URL:")
-            self.log(url)
-
             yield scrapy.Request(url=url, callback=self.parse, meta={'doctor_id':doctor.id})
-
 
     def parse(self, response):
 
         doctor_id = response.meta['doctor_id']
 
         # try:
-        doctor = Doctor.get(doctor_id)
+        doctor = Doctor.get_by_id(doctor_id)
+        self.log("Mining data for doctor number:")
+        self.log(doctor.id)
 
-        for identifier in Identifier.select().where(Identifier.type == "1").select():
-            self.log(identifier.name)
-            #self.log(identifier)
+        for identifier in Identifier.select().where(Identifier.type == "1"):
             data = response.xpath(identifier.identifier)
 
             if(identifier.name == "doc_gender"):

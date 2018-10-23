@@ -25,10 +25,19 @@ class BaseModel(Model):
     class Meta:
         database = db_connection
 
+class Doctor(BaseModel):
+    url = CharField(null=True)
+    name = CharField(null=True)
+    function = CharField(null=True)
+    gender = CharField(null=True)
+    count_of_reviews = CharField(null=True)
+    workplace = CharField(null=True)
+    recommendation = CharField(null=True)
+
 class Review(BaseModel):
     text = CharField(null=True)
     url = CharField(null=True)
-    date = DateTimeField()
+    date = DateTimeField(null=True)
     score_avg = IntegerField(null=True)
     level_1_appointments = IntegerField(null=True)
     level_2_treatment = IntegerField(null=True)
@@ -38,16 +47,7 @@ class Review(BaseModel):
     level_6_accomodation  = IntegerField(null=True)
     timestamp = DateTimeField(default=datetime.datetime.now)
     reference = IntegerField(null=True)
-    #doctor_id = ForeignKeyField(Doctor) # TODO look up how this works
-
-class Doctor(BaseModel):
-    url = CharField(null=True)
-    name = CharField(null=True)
-    function = CharField(null=True)
-    gender = CharField(null=True)
-    count_of_reviews = IntegerField(null=True)
-    workplace = IntegerField(null=True)
-    recommendation = CharField(null=True)
+    doctor = ForeignKeyField(Doctor, backref='reviews') # TODO look up how this works
 
 class Identifier(BaseModel):
     name = CharField()

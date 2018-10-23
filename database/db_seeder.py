@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath(scriptpath))
 from peewee import *
 from db_schema import Identifier
 
-from db_connection import db_connection
+from db_connection import db_connection 
 
 identifiers = {
     ("review_disease", "//*/", "2"),
@@ -29,7 +29,7 @@ identifiers = {
     ("doc_function", "//*/h1/following-sibling::p/text()", "1"),
     ("doc_workplace", "//*/address/div/a[contains(@class, 'address_content')]/text()", "1"),
     ("initial_doctor_link", "//*[contains(@class, 'results')]//a/@href", "0"),
-    ("initial_review_link", "", "3")
+    ("initial_review_link", "//*[@class='striped_box results_holder']/li//h4/a/@href", "3")
 }
 
 def seed_db():

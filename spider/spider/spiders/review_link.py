@@ -22,7 +22,7 @@ class ReviewLinkSpider(scrapy.Spider):
     name = 'reviewlinkspider'
     allowed_domains = ['zorgkaartnederland.nl']
     start_urls = ['http://zorgkaartnederland.nl']
-
+    deadend = False
     # URLS FOR MINING
     #
     # for all results of a doctor:
@@ -33,10 +33,24 @@ class ReviewLinkSpider(scrapy.Spider):
         doctors = Doctor.select()
 
         for doctor in doctors:
+            if(self.deadend):
+                self.deadend = False
+                break
+
             url = self.start_urls[0] + doctor.url + "waardering"
-            yield scrapy.Request(url=url, callback=self.parse, meta={'doctor_id':doctor.id})
+            r = range(20)
+
+            for i in r:
+                if(i == 0):
+                    yield scrapy.Request(url=url, callback=self.parse, meta={'doctor_id':doctor.id})
+                else:
+                    url_2 = url + "/pagina" + str(i)
+                    yield scrapy.Request(url=url_2, callback=self.parse, meta={'doctor_id':doctor.id})
 
     def parse(self, response):
+
+        if(response.status == "404"):
+            self.deadend = True
 
         doctor = Doctor.get_by_id(response.meta["doctor_id"])
 

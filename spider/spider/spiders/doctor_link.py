@@ -48,11 +48,18 @@ class DoctorLinkSpider(scrapy.Spider):
     name = "doctorlinkspider"
 
     def start_requests(self):
-        urls = ("https://www.zorgkaartnederland.nl/amsterdam", "https://www.zorgkaartnederland.nl/huisarts/amsterdam", "https://www.zorgkaartnederland.nl/neuroloog/amsterdam", "https://www.zorgkaartnederland.nl/neurochirurg/amsterdam")
+        # urls = ("https://www.zorgkaartnederland.nl/amsterdam", "https://www.zorgkaartnederland.nl/huisarts/amsterdam", "https://www.zorgkaartnederland.nl/neuroloog/amsterdam", "https://www.zorgkaartnederland.nl/neurochirurg/amsterdam")
+        urls = ("https://www.zorgkaartnederland.nl/huisarts/amsterdam", "https://www.zorgkaartnederland.nl/neuroloog/amsterdam", "https://www.zorgkaartnederland.nl/neurochirurg/amsterdam")
 
         for url in urls:
             # TODO: add multiple page support for different urls
-            yield scrapy.Request(url=url, callback=self.parse)
+            r = range(25)
+            if(url == "https://www.zorgkaartnederland.nl/amsterdam"):
+                r = range(500)
+            for i in r:
+                url_2 = url + "/pagina" + str(i)
+                self.log(url_2)
+                yield scrapy.Request(url=url_2, callback=self.parse)
 
 
     def parse(self, response):

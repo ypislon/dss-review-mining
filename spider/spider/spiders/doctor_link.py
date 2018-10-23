@@ -15,6 +15,12 @@ from urllib.parse import urljoin
 from db_schema import Identifier, Doctor
 #from helper import *
 
+# if you want to remove the logger functionality of peewee:
+import logging
+logger = logging.getLogger('peewee')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.WARNING)
+
 #
 # URLS FOR MINING
 #
@@ -51,12 +57,10 @@ class DoctorLinkSpider(scrapy.Spider):
 
     def parse(self, response):
         for identifier in Identifier.select().where(Identifier.type == "0").select():
-            self.log(identifier.name)
-            #self.log(identifier)
             links = response.xpath(identifier.identifier) # TODO and so on...
-            self.log(links)
+
             for link in links:
                 doctor = Doctor.get_or_create(url=link.extract())
-                # self.log(doctor.url)
-                # doctor.url = link.extract()
-                # doctor.save()
+                self.log("Logging doctor with url")
+                self.log(link.extract())
+                self.log("#############")

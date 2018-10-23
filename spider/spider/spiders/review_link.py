@@ -11,6 +11,13 @@ sys.path.append(os.path.abspath(scriptpath))
 from peewee import *
 from db_schema import Identifier, Doctor, Review
 
+# if you want to remove the logger functionality of peewee:
+import logging
+logger = logging.getLogger('peewee')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.WARNING)
+
+
 class ReviewLinkSpider(scrapy.Spider):
     name = 'reviewlinkspider'
     allowed_domains = ['zorgkaartnederland.nl']
@@ -39,4 +46,9 @@ class ReviewLinkSpider(scrapy.Spider):
             review = Review()
             review.doctor = doctor
             review.url = review_link.extract()
+
+            self.log("Creating review with link")
+            self.log(review_link.extract())
+            self.log("#############")
+
             review.save()

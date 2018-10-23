@@ -14,11 +14,10 @@ from db_schema import Identifier, Doctor
 #from helper import *
 
 # if you want to remove the logger functionality of peewee:
-# import logging
-# logger = logging.getLogger('peewee')
-# logger.addHandler(logging.StreamHandler())
-# logger.setLevel(logging.ERROR)
-
+import logging
+logger = logging.getLogger('peewee')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.WARNING)
 
 # here we extract information about the doctors
 
@@ -57,6 +56,10 @@ class DoctorinfospiderSpider(scrapy.Spider):
                 doctor.name = data.extract_first()
             # elif(identifier.name == 'doc_count_of_reviews'):
             #     doctor.count_of_reviews = data.extract_first()
+
+            self.log("Scraping info for doctor with id")
+            self.log(doctor.id)
+            self.log("#############")
 
             doctor.save()
 

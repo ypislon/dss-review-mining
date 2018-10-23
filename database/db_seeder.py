@@ -9,26 +9,26 @@ sys.path.append(os.path.abspath(scriptpath))
 from peewee import *
 from db_schema import Identifier
 
-from db_connection import db_connection 
+from db_connection import db_connection
 
 identifiers = {
-    ("review_disease", "//*/", "2"),
-    ("review_relevance", "//*/", "2"),
-    ("level_1", "//**/#main-body-content/**/ul[class='striped_box sliders_list']/li[1]/text()", "2"),
-    ("level_2", "//**/#main-body-content/**/ul[class='striped_box sliders_list']/li[2]/text()", "2"),
-    ("level_3", "//**/#main-body-content/**/ul[class='striped_box sliders_list']/li[3]/text()", "2"),
-    ("level_4", "//**/#main-body-content/**/ul[class='striped_box sliders_list']/li[4]/text()", "2"),
-    ("level_5", "//**/#main-body-content/**/ul[class='striped_box sliders_list']/li[5]/text()", "2"),
-    ("level_6", "//**/#main-body-content/**/ul[class='striped_box sliders_list']/li[6]/text()", "2"),
-    ("review_score", "//**/inner_row/div[1]/text()", "2"),
-    ("review_text", "//**/div[class='explanation']/p[1]/text()", "2"),
+    ("initial_doctor_link", "//*[contains(@class, 'results')]//a/@href", "0"),
     ("doc_name", "//*/h1/text()", "1"),
     ("doc_count_of_reviews", "///*[contains(@class, 'buttons_holder')]/p[1]/text()", "1"),
     ("doc_recommendation", "//*[contains(@class, 'buttons_holder')]/p[1]/b/text()", "1"),
     ("doc_gender", "//*/address/div[1]/span/text()", "1"),
     ("doc_function", "//*/h1/following-sibling::p/text()", "1"),
     ("doc_workplace", "//*/address/div/a[contains(@class, 'address_content')]/text()", "1"),
-    ("initial_doctor_link", "//*[contains(@class, 'results')]//a/@href", "0"),
+    ("review_disease", "//*[@class='sliders_holder form_holder holder_small']//ul[@class='striped_box form_holder rating_holder_small']//div[@class='media-body']/text()", "2"),
+    ("review_relevance", "//*[@class='rating_like_holder']//span[@class='number_of_persons']/text()", "2"),
+    ("level_1", "//section[@class='content_section'][1]//ul[@class='striped_box sliders_list']/li[1]//text()", "2"),
+    ("level_2", "//section[@class='content_section'][1]//ul[@class='striped_box sliders_list']/li[2]//text()", "2"),
+    ("level_3", "//section[@class='content_section'][1]//ul[@class='striped_box sliders_list']/li[3]//text()", "2"),
+    ("level_4", "//section[@class='content_section'][1]//ul[@class='striped_box sliders_list']/li[4]//text()", "2"),
+    ("level_5", "//section[@class='content_section'][1]//ul[@class='striped_box sliders_list']/li[5]//text()", "2"),
+    ("level_6", "//section[@class='content_section'][1]//ul[@class='striped_box sliders_list']/li[6]//text()", "2"),
+    ("review_score", "//*[@class='fractional_number text-right pull-right']//text()", "2"),
+    ("review_text", "//*[@class='sliders_holder form_holder holder_small']/div[@class='with_left_margin with_right_margin']/div[2]/text()", "2"),
     ("initial_review_link", "//*[@class='striped_box results_holder']/li//h4/a/@href", "3")
 }
 

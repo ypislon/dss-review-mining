@@ -35,18 +35,20 @@ class Doctor(BaseModel):
     recommendation = CharField(null=True)
 
 class Review(BaseModel):
-    text = CharField(null=True)
+    text = TextField(null=True)
+    disease = CharField(null=True)
+    relevance = CharField(null=True)
     url = CharField(null=True)
     date = DateTimeField(null=True)
-    score_avg = IntegerField(null=True)
-    level_1_appointments = IntegerField(null=True)
-    level_2_treatment = IntegerField(null=True)
-    level_3_friendliness = IntegerField(null=True)
-    level_4_information = IntegerField(null=True)
-    level_5_listening = IntegerField(null=True)
-    level_6_accomodation  = IntegerField(null=True)
+    score_avg = CharField(null=True)
+    level_1 = CharField(null=True)
+    level_2 = CharField(null=True)
+    level_3 = CharField(null=True)
+    level_4 = CharField(null=True)
+    level_5 = CharField(null=True)
+    level_6  = CharField(null=True)
     timestamp = DateTimeField(default=datetime.datetime.now)
-    reference = IntegerField(null=True)
+    reference = CharField(null=True)
     doctor = ForeignKeyField(Doctor, backref='reviews') # TODO look up how this works
 
 class Identifier(BaseModel):

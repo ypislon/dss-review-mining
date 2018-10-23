@@ -24,7 +24,6 @@ from db_schema import Identifier, Doctor
 
 class DoctorinfospiderSpider(scrapy.Spider):
     name = 'doctorinfospider'
-    allowed_domains = ['example.com']
     start_urls = ['https://www.zorgkaartnederland.nl']
 
     def start_requests(self):

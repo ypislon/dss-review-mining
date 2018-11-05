@@ -45,15 +45,20 @@ class DoctorinfospiderSpider(scrapy.Spider):
             data = response.xpath(identifier.identifier)
 
             if(identifier.name == "doc_gender"):
-                doctor.gender = data.extract_first()
+                if(data.extract_first()):
+                    doctor.gender = data.extract_first().strip()
             elif(identifier.name == 'doc_recommendation'):
-                doctor.recommendation = data.extract_first()
+                if(data.extract_first()):
+                    doctor.recommendation = data.extract_first().strip()
             elif(identifier.name == 'doc_workplace'):
-                doctor.workplace = data.extract_first()
+                if(data.extract_first()):
+                    doctor.workplace = data.extract_first().strip()
             elif(identifier.name == 'doc_function'):
-                doctor.function = data.extract_first()
+                if(data.extract_first()):
+                    doctor.function = data.extract_first().strip()
             elif(identifier.name == 'doc_name'):
-                doctor.name = data.extract_first()
+                if(data.extract_first()):
+                    doctor.name = data.extract_first().strip()
             # elif(identifier.name == 'doc_count_of_reviews'):
             #     doctor.count_of_reviews = data.extract_first()
 

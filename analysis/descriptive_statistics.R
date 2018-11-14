@@ -69,11 +69,12 @@ reviews_full_set <- all_reviews %>%
 
 ##### generate descriptive statistics
 
-counted_articles <- all_articles %>%
-  filter(as.Date(date_published)>="2016-03-01" | is.na(date_published)) %>%
-  inner_join(all_websites, by = c("website_id" = "id")) %>%
-  group_by(name) %>%
-  summarise(article_count = n(), id = website_id[1])
+# example:
+#counted_articles <- all_articles %>%
+#  filter(as.Date(date_published)>="2016-03-01" | is.na(date_published)) %>%
+#  inner_join(all_websites, by = c("website_id" = "id")) %>%
+#  group_by(name) %>%
+#  summarise(article_count = n(), id = website_id[1])
 
 ### doctors
 ggplot(docs_clean, aes(x = gender)) +
@@ -94,3 +95,14 @@ ggplot(reviews_clean, aes(x = score_avg)) +
 
 ggplot(reviews_clean, aes(x = disease)) +
   geom_bar()
+# get a look at top diseases
+reviews_clean %>%
+  group_by(disease) %>%
+  summarise(n = n()) %>% 
+  arrange(desc(n)) %>% View()
+
+# look at relevance of reviews
+reviews_clean$relevance <- reviews_clean$relevance %>% replace_na(0)
+ggplot((reviews_clean %>% replace_na(relevance = 0)), aes(x = relevance)) +
+  geom_bar()
+

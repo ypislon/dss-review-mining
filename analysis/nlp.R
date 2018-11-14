@@ -61,3 +61,35 @@ additional_stop_words <- c("für", "the", "sei", "o", "über", "to", "of", "r", 
 extratidy_review_text <- tidy_review_text %>% anti_join(stop_words_nl, by = c("word" = "V1"))
 
 extratidy_review_text %>% count(word, sort = TRUE) %>% View()
+
+##### create network
+
+review_network <- extratidy_review_text %>%
+  select(id, word, score_avg)
+
+graph2 <- graph_from_data_frame(review_network)
+
+# TODO: choose other algo to display network
+
+graph2 %>% visIgraph() %>%
+  visOptions(nodesIdSelection = TRUE, highlightNearest = list(enabled = TRUE, hover = FALSE, degree = 1)) %>%
+  visInteraction(navigationButtons = TRUE)
+
+V(graph2)$deg_in <- degree(graph2, mode="in")
+V(graph2)$size <- V(graph2)$deg_in * 1
+#V(graph2)$size <- V(graph2)$score_avg
+
+review_nodes <- which(is.numeric(V(graph2)$name))
+
+# color the words
+for (v in V(graph2)) {
+  if(is.na(as.numeric(V(graph2)[v]$name))) {
+    V(graph2)[v]$color <- "#84a07c"
+  } else {
+    # do something with the review nodes
+    #V(graph2)[v]$size <- 100
+  }
+}
+
+
+plot(graph2)

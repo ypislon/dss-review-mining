@@ -49,13 +49,13 @@ class DoctorLinkSpider(scrapy.Spider):
 
     def start_requests(self):
         # urls = ("https://www.zorgkaartnederland.nl/amsterdam", "https://www.zorgkaartnederland.nl/huisarts/amsterdam", "https://www.zorgkaartnederland.nl/neuroloog/amsterdam", "https://www.zorgkaartnederland.nl/neurochirurg/amsterdam")
-        urls = ("https://www.zorgkaartnederland.nl/huisarts/amsterdam", "https://www.zorgkaartnederland.nl/neuroloog/amsterdam", "https://www.zorgkaartnederland.nl/neurochirurg/amsterdam")
+        urls = ("https://www.zorgkaartnederland.nl/huisarts", "https://www.zorgkaartnederland.nl/neuroloog")
 
         for url in urls:
             # TODO: add multiple page support for different urls
-            r = range(25)
-            if(url == "https://www.zorgkaartnederland.nl/amsterdam"):
-                r = range(500)
+            r = range(500)
+            if(url == "https://www.zorgkaartnederland.nl/neuroloog"):
+                r = range(100)
             for i in r:
                 url_2 = url + "/pagina" + str(i)
                 self.log(url_2)

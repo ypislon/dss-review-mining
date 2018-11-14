@@ -23,7 +23,7 @@ class ReviewLinkSpider(scrapy.Spider):
     allowed_domains = ['zorgkaartnederland.nl']
     start_urls = ['http://zorgkaartnederland.nl']
     deadend = False
-    
+
     # URLS FOR MINING
     #
     # for all results of a doctor:
@@ -31,12 +31,13 @@ class ReviewLinkSpider(scrapy.Spider):
     # e.g. https://www.zorgkaartnederland.nl/zorgverlener/neuroloog-meulen-b-c-ter-278252/waardering
 
     def start_requests(self):
-        doctors = Doctor.select()
+        doctors = Doctor.select().where(Doctor.id > 12800)
 
         for doctor in doctors:
 
             url = self.start_urls[0] + doctor.url + "waardering"
-            r = range(20)
+            r = range(100)
+            self.log("##### Scraping doctor with id %s #####" % (doctor.id))
 
             for i in r:
                 if(self.deadend):

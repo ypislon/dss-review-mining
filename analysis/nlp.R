@@ -22,7 +22,7 @@ con <- dbConnect(RMySQL::MySQL(),
                  host = "localhost",
                  port = 3306,
                  user = "root",
-                 password = "1234"
+                 password = "password"
 )
 
 ##### collect data from the database #####
@@ -55,9 +55,9 @@ tidy_review_text <- reviews_with_text %>%
 
 # get stop word (en and ger)
 # watch out: utf-encoding (!)
-stop_words_nl <- read.delim("c:/hdm/xampp/htdocs/dss-review-mining/analysis/utils/stopwords-nl.txt", header=FALSE, stringsAsFactors=FALSE)
-stop_words_nl_weak <- read.delim("c:/hdm/xampp/htdocs/dss-review-mining/analysis/utils/stopwords-nl-weak.txt", header=FALSE, stringsAsFactors=FALSE)
-additional_stop_words <- c("für", "deze", "the", "nt", "and", "de", "sei", "o", "über", "to", "of", "r", "on", "for", "is", "s", "from", "teilen", "var", "2", "können", "to", "i", "a", "the") %>% as.tibble()
+stop_words_nl <- read.delim("~/Documents/projects/dss-review-mining/analysis/utils/stopwords-nl.txt", header=FALSE, stringsAsFactors=FALSE)
+stop_words_nl_weak <- read.delim("~/Documents/projects/dss-review-mining/analysis/utils/stopwords-nl-weak.txt", header=FALSE, stringsAsFactors=FALSE)
+additional_stop_words <- c("für", "the", "sei", "o", "über", "to", "of", "r", "on", "for", "is", "s", "from", "teilen", "var", "2", "können") %>% as.tibble()
 
 extratidy_review_text <- tidy_review_text %>% anti_join(stop_words_nl_weak, by = c("word" = "V1")) %>% anti_join(additional_stop_words, by = c("word" = "value"))
 
@@ -69,8 +69,7 @@ review_network <- extratidy_review_text %>%
   select(id, word, score_avg, relevance)
 
 review_words_big <- extratidy_review_text %>%
-  filter(disease == "Migraine") %>%
-  select(id, word, score_avg) %>% count(word) %>% filter(n > 0)
+  select(id, word, score_avg) %>% count(word) %>% filter(n > 20000)
 
 review_network_small <- review_network %>%
   filter(word %in% review_words_big$word)
@@ -132,6 +131,7 @@ graph2 %>% visIgraph() %>%
 graph3 <- graph2 %>% add_layout_(as_bipartite())
 plot(graph3)
 
+plot(graph2)
 
 ##### nlp & clustering #####
 
@@ -144,6 +144,12 @@ extratidy_review_text %>% filter(relevance > 5)
 
 # summarized text per review
 summarized_text <- extratidy_review_text %>% count(id, word, sort = TRUE)
+
+# summarized_text_migraine <- migraine_text %>% count(id, word, sort = TRUE)
+# 
+# aggregated_keywods_migriane <- summarized_text_migraine %>%
+#   bind_tf_idf(word, id, n) %>%
+#   arrange(desc(tf_idf))
 
 ## term frequency and inverse term frequency
 # find the words most distinctive to each document

@@ -16,22 +16,22 @@ library("visNetwork")
 library("data.table")
 
 con <- dbConnect(RMySQL::MySQL(),
-                 dbname = "dss-mining-review",
+                 dbname = "dssreviewmining",
                  host = "localhost",
                  port = 3306,
                  user = "root",
-                 password = "1234"
+                 password = "password"
 )
 
 ##### collect data from the database #####
 
 # collect the data
 
-sql_statement_doctors <- "SELECT * FROM `dss-mining-review`.doctor"
+sql_statement_doctors <- "SELECT * FROM `dssreviewmining`.doctor"
 
 all_doctors <- con %>% tbl(sql(sql_statement_doctors)) %>% collect()
 
-sql_statement_reviews <- "SELECT * FROM `dss-mining-review`.review"
+sql_statement_reviews <- "SELECT * FROM `dssreviewmining`.review"
 
 all_reviews <- con %>% tbl(sql(sql_statement_reviews)) %>% collect()
 
@@ -67,6 +67,9 @@ reviews_clean <- all_reviews %>%
 reviews_full_set <- all_reviews %>%
   filter(!is.na(text) & !is.na(disease) & !is.na(score_avg))
 
+reviews_clean_migraine <- reviews_clean %>%
+  filter(disease == "Migraine" | disease == "Spanningshoofdpijn" | disease == "Clusterhoofdpijn")
+
 ##### generate descriptive statistics
 
 # example:
@@ -87,14 +90,27 @@ ggplot(docs_clean, aes(x = `workplace`)) +
   geom_bar()
 
 ggplot(docs_clean, aes(x = `recommendation`)) +
-  geom_bar()
+  geom_bar() +
+  labs(title = "Distribution of the recommendation score of all doctors", subtitle = "Total number of doctors with a recommendation score: 964") +
+  xlab("Recommendation (in %)") +
+  ylab("Number of doctors")
 
 ### reviews
 ggplot(reviews_clean, aes(x = score_avg)) +
-  geom_bar()
+  geom_bar() + 
+  labs(title = "Distribution of the score of all reviews", subtitle = "Total number of reviews: 60455") +
+  xlab("Average Score") +
+  ylab("Number of reviews")
+
+ggplot(reviews_clean_migraine, aes(x = score_avg)) +
+  geom_bar(aes(fill = disease)) + 
+  labs(title = "Distribution of the score of reviews about headache", subtitle = "Total number of reviews: 466") +
+  xlab("Average Score") +
+  ylab("Number of reviews")
 
 ggplot(reviews_clean, aes(x = disease)) +
   geom_bar()
+
 # get a look at top diseases
 reviews_clean %>%
   group_by(disease) %>%
@@ -104,5 +120,7 @@ reviews_clean %>%
 # look at relevance of reviews
 reviews_clean$relevance <- reviews_clean$relevance %>% replace_na(0)
 ggplot((reviews_clean %>% replace_na(relevance = 0)), aes(x = relevance)) +
-  geom_bar()
+  geom_bar() + 
+  xlim(0, 40) +
+  ylim(0, 10000)
 

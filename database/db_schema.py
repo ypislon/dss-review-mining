@@ -1,4 +1,7 @@
 # good ol' python black magic
+# by adding the local folder to the system path, we can import other python classes without a hassle
+# and structure the setup for the database backend better
+# not optimal for production
 import sys
 import os
 scriptpath = "."
@@ -49,30 +52,12 @@ class Review(BaseModel):
     level_6  = CharField(null=True)
     timestamp = DateTimeField(default=datetime.datetime.now)
     reference = CharField(null=True)
-    doctor = ForeignKeyField(Doctor, backref='reviews') # TODO look up how this works
+    doctor = ForeignKeyField(Doctor, backref='reviews')
 
 class Identifier(BaseModel):
     name = CharField()
     identifier = CharField()
     type = CharField()
-    # review_disease = CharField()
-    # review_relevance = CharField()
-    ### -> can't assign single levels, since they differ for every review
-    # level_1_appointments = CharField()
-    # level_2_treatment = CharField()
-    # level_3_friendliness = CharField()
-    # level_4_information = CharField()
-    # level_5_listening = CharField()
-    # level_6_accomodation = CharField()
-    # review_score = CharField()
-    # review_text = CharField()
-    # doc_name = CharField()
-    # doc_count_of_reviews = CharField()
-    # doc_recommendation = CharField()
-    # doc_gender = CharField()
-    # doc_function = CharField()
-    # doc_workplace = CharField()
-    # initial_review_link = CharField()
 
 list_of_models = [Review, Doctor, Identifier]
 

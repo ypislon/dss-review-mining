@@ -1,4 +1,7 @@
 # good ol' python black magic
+# by adding the local folder to the system path, we can import other python classes without a hassle
+# and structure the setup for the database backend better
+# not optimal for production
 import sys
 import os
 scriptpath = "."

@@ -17,13 +17,15 @@ library("tm")
 library("topicmodels")
 library("tidytext")
 
-con <- dbConnect(RMySQL::MySQL(),
-                 dbname = "dssreviewmining",
-                 host = "localhost",
-                 port = 3306,
-                 user = "root",
-                 password = "password"
-)
+##### setup the database #####
+# uncomment the following lines and edit the credentials for your needs
+#con <- dbConnect(RMariaDB::MariaDB(),
+#                 dbname = "dssreviewmining",
+#                 host = "localhost",
+#                 port = 3306,
+#                 user = "root",
+#                 password = "password"
+#)
 
 ##### collect data from the database #####
 
@@ -50,20 +52,24 @@ tidy_review_text <- reviews_with_text %>%
   as.tibble()
 
 # tidy_review_text %>% count(word, sort = TRUE)
-# 
+#
 # tidy_review_text %>% group_by(word) %>% summarise(n()) %>% View()
 
-# get stop word (en and ger)
-# watch out: utf-encoding (!)
+# get stop words (english and dutch)
+# watch out for the utf-encoding (!)
+# could lead to problems with special chars
 stop_words_nl <- read.delim("~/Documents/projects/dss-review-mining/analysis/utils/stopwords-nl.txt", header=FALSE, stringsAsFactors=FALSE)
 stop_words_nl_weak <- read.delim("~/Documents/projects/dss-review-mining/analysis/utils/stopwords-nl-weak.txt", header=FALSE, stringsAsFactors=FALSE)
 additional_stop_words <- c("für", "the", "sei", "o", "über", "to", "of", "r", "on", "for", "is", "s", "from", "teilen", "var", "2", "können") %>% as.tibble()
 
 extratidy_review_text <- tidy_review_text %>% anti_join(stop_words_nl_weak, by = c("word" = "V1")) %>% anti_join(additional_stop_words, by = c("word" = "value"))
 
+# take a first look at the filtered set of words, sorted by occurences
 extratidy_review_text %>% count(word, sort = TRUE) %>% View()
 
-##### create network ##### 
+##### create networks #####
+# we want to look at the reviews in a network, and see which words connect to which reviews
+# the goal is to find cluster of words or central words, maybe even cluster the reviews based on their network measurements
 
 review_network <- extratidy_review_text %>%
   select(id, word, score_avg, relevance)
@@ -121,6 +127,9 @@ for (v in V(graph2)) {
 # layout_as_bipartite
 desired_layout <- "layout_as_bipartite"
 
+# render an interactive network inside of
+# can be saved as a html page as well
+# take a look at https://datastorm-open.github.io/visNetwork/more.html
 graph2 %>% visIgraph() %>%
   visIgraphLayout(layout = desired_layout) %>%
   visOptions(nodesIdSelection = TRUE, highlightNearest = list(enabled = TRUE, hover = FALSE, degree = 1)) %>%
@@ -128,10 +137,10 @@ graph2 %>% visIgraph() %>%
 
 # plotting a static image of the network
 # if visnetwork doesn't recognize the layout algo
+plot(graph2)
+
 graph3 <- graph2 %>% add_layout_(as_bipartite())
 plot(graph3)
-
-plot(graph2)
 
 ##### nlp & clustering #####
 
@@ -146,7 +155,7 @@ extratidy_review_text %>% filter(relevance > 5)
 summarized_text <- extratidy_review_text %>% count(id, word, sort = TRUE)
 
 # summarized_text_migraine <- migraine_text %>% count(id, word, sort = TRUE)
-# 
+#
 # aggregated_keywods_migriane <- summarized_text_migraine %>%
 #   bind_tf_idf(word, id, n) %>%
 #   arrange(desc(tf_idf))
@@ -158,11 +167,11 @@ aggregated_keywods_per_review <- summarized_text %>%
   arrange(desc(tf_idf))
 
 ## aggregate the keywords and filter the keywords by n() and tf_idf
-# r way of doing it
+# "r way" of doing it
 #aggregate(aggregated_keywods_per_review$tf_idf, list(aggregated_keywods_per_review$word), median) %>% View()
 aggregated_keywords <- aggregated_keywods_per_review %>%
   group_by(word) %>%
-  summarise_all(funs(median, sum)) %>% 
+  summarise_all(funs(median, sum)) %>%
   select(word, n_sum, tf_median, idf_median, tf_idf_median)
 
 top_keywords <- aggregated_keywords %>% filter(n_sum > 20) %>% filter(tf_idf_median > 0.2)
@@ -179,7 +188,7 @@ comparison_migraine <- aggregated_keywords %>%
   inner_join(top_keywords_migraine, by = "word")
 
 ## tokenizing by n-grams
-#
+# look at the context of the words and word embedding
 
 # tidy_review_text_ngrams <- reviews_with_text %>%
 #   unnest_tokens(word, text, token = "ngrams", n = 3) %>%
@@ -196,21 +205,21 @@ reviews_bigrams_per_review <- reviews_with_text %>%
   unite(col = word, word1, word2, sep = " ")
 
 # count by word and disease
-reviews_bigram_per_disease <- reviews_bigrams_per_review %>% 
-  count(word, disease, sort = TRUE) %>% 
+reviews_bigram_per_disease <- reviews_bigrams_per_review %>%
+  count(word, disease, sort = TRUE) %>%
   filter(!is.na(disease) & n > 5)
   #count(word, sort = TRUE) %>% View()
 
-aggregated_reviews_bigram_per_review <- reviews_bigrams_per_review %>% 
+aggregated_reviews_bigram_per_review <- reviews_bigrams_per_review %>%
   count(id, word, sort = TRUE) %>%
   bind_tf_idf(word, id, n) %>%
   arrange(desc(tf_idf))
 
-aggregated_reviews_per_disease <- aggregated_reviews_bigram_per_review %>% 
+aggregated_reviews_per_disease <- aggregated_reviews_bigram_per_review %>%
   inner_join(reviews_bigram_per_disease, by = c("word" = "word"), copy = TRUE)
 
-reviews_bigrams_per_review_score <- reviews_bigrams_per_review %>% 
-  group_by(id) %>% 
+reviews_bigrams_per_review_score <- reviews_bigrams_per_review %>%
+  group_by(id) %>%
   summarise(n(), score_avg[1])
 
 aggregated_reviews_per_disease %<>%
@@ -263,7 +272,7 @@ review_topics <- tidy(review_lda, matrix = "beta")
 top_n(review_topics, 20) %>% arrange(desc(beta))
 
 # ggplot(review_topics, aes(x = round(beta, digits = 5))) +
-#   geom_bar() + 
+#   geom_bar() +
 #   facet_wrap(~ topic)
 
 review_top_terms <- review_topics %>%
@@ -283,7 +292,7 @@ review_top_terms %>%
 # install.packages("topicmodels")
 # library("topicmodels")
 
-review_bigram_dtm <- aggregated_reviews_bigram_per_review %>% 
+review_bigram_dtm <- aggregated_reviews_bigram_per_review %>%
   cast_dtm(document = id, term = word, value = n)
 
 review_bigram_lda <- LDA(review_bigram_dtm, k = 3)
@@ -327,6 +336,7 @@ review_emotion_scores <- extratidy_review_text %>%
   summarise_if(is.numeric, sd)
 
 # get emotion score for each word
+# TODO
 
 ###### Per disease analysis ######
 
@@ -353,4 +363,3 @@ reviews_headache_top_terms %>%
   geom_col(show.legend = FALSE) +
   facet_wrap(~ topic, scales = "free") +
   coord_flip()
-

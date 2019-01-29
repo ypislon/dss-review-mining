@@ -15,13 +15,38 @@ library("purrr")
 library("visNetwork")
 library("data.table")
 
-con <- dbConnect(RMySQL::MySQL(),
-                 dbname = "dssreviewmining",
-                 host = "localhost",
-                 port = 3306,
-                 user = "root",
-                 password = "password"
-)
+install.packages("igraph")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("tidyr")
+install.packages("tibble")
+install.packages("stringr")
+install.packages("lubridate")
+install.packages("DBI")
+install.packages("tidygraph")
+install.packages("tidytext")
+install.packages("magrittr")
+install.packages("readr")
+install.packages("readxl")
+install.packages("purrr")
+install.packages("visNetwork")
+install.packages("data.table")
+
+install.packages("RMariaDB")
+install.packages("odbc")
+install.packages("dbplyr")
+
+library("dbplyr")
+
+##### setup the database #####
+# uncomment the following lines and edit the credentials for your needs
+#con <- dbConnect(RMariaDB::MariaDB(),
+#                 dbname = "dssreviewmining",
+#                 host = "localhost",
+#                 port = 3306,
+#                 user = "root",
+#                 password = "password"
+#)
 
 ##### collect data from the database #####
 
@@ -45,7 +70,7 @@ docs_clean <- all_doctors %>%
   mutate(`function` = str_trim(`function`)) %>%
   mutate(gender = str_trim(gender)) %>%
   mutate(workplace = str_trim(workplace))
-  
+
 docs_full_set <- all_doctors %>%
   filter(!is.na(name) & !is.na(`function`) & !is.na(gender) & !is.na(workplace))
 
@@ -97,13 +122,13 @@ ggplot(docs_clean, aes(x = `recommendation`)) +
 
 ### reviews
 ggplot(reviews_clean, aes(x = score_avg)) +
-  geom_bar() + 
+  geom_bar() +
   labs(title = "Distribution of the score of all reviews", subtitle = "Total number of reviews: 60455") +
   xlab("Average Score") +
   ylab("Number of reviews")
 
 ggplot(reviews_clean_migraine, aes(x = score_avg)) +
-  geom_bar(aes(fill = disease)) + 
+  geom_bar(aes(fill = disease)) +
   labs(title = "Distribution of the score of reviews about headache", subtitle = "Total number of reviews: 466") +
   xlab("Average Score") +
   ylab("Number of reviews")
@@ -114,13 +139,12 @@ ggplot(reviews_clean, aes(x = disease)) +
 # get a look at top diseases
 reviews_clean %>%
   group_by(disease) %>%
-  summarise(n = n()) %>% 
+  summarise(n = n()) %>%
   arrange(desc(n)) %>% View()
 
 # look at relevance of reviews
 reviews_clean$relevance <- reviews_clean$relevance %>% replace_na(0)
 ggplot((reviews_clean %>% replace_na(relevance = 0)), aes(x = relevance)) +
-  geom_bar() + 
+  geom_bar() +
   xlim(0, 40) +
   ylim(0, 10000)
-

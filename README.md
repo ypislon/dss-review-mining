@@ -1,4 +1,8 @@
-# Data mining, processing and analysis for doctors in and around Amsterdam, regarding headache and migraine patients.
+# Web crawler and analysis tools for healthcare reviews in the Netherlands
+___
+
+Data mining, processing and analysis for doctors and their reviews in and around Amsterdam, with the focus on headache and migraine patients.
+___
 
 This repository was created as part of the "Digital Society School" programme at the University of Applied Sciences Amsterdam.
 
@@ -11,6 +15,8 @@ The repo contains the setup for a web crawler, the database needed to store the 
 The database is implemented with the help of the ORM Peewee in Python. A main reason is that the web crawler, which needs to access the database, is written in Python. Implementing the ORM in Python helps you to easily store data with the web crawler. If you want, you can implement any common type of database, in this project we chose MySQL / MariaDB. It provides sufficient support for both Peewee and R.
 
 ## Web crawler
+
+The web crawler is written in Python, using the `scrapy` framework. There are four crawlers, which take care of gathering all links for doctors and reviews, as well as fetching the available data for doctors and reviews. The data gets written to the database synchronously while crawling. For the sake of simplicity the crawlers are split up and can be executed directly from the terminal.
 
 ## Analysis
 
